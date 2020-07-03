@@ -83,10 +83,13 @@ cat cleanfile_step2.tsv | grep eng -v > cleanfile_step3.tsv
 # Hierfür sortiere ich die Datei mit "sort" und lösche dann doppelte
 # Zeilen mit "uniq". (Die Datei muss vor der Verwendung von uniq sortiert 
 # werden, weil uniq nur aufeinander folgende doppelte Zeilen entdeckt.)
-# Zudem werden mit der Option -u  nur Zeilen ausgegeben, die nicht
+# Zudem werden mit der Option -n die Zeien nach ihrem numerischen Wert
+# sortiert und mit der Option -u  nur Zeilen ausgegeben, die nicht
 # mehrfach vorkommen.
 
-sort cleanfile_step3.tsv | uniq -u > cleanfile_step4.tsv
+sort -n cleanfile_step3.tsv | uniq -u > cleanfile_step4.tsv
 
-# Nun sind die Zeilen nach ISSN sortiert und die Leerzeilen entfernt.
-# Allerdings steht die Spaltenüberschrift am Ende der Tabelle.
+# Ich überprüfe das Ergebnis mit "cat".
+# Zum Abschluss speichere ich die bereinigte Datei als Enddatei ab.
+
+cp cleanfile_step4.tsv 2020-05-23-Dates_and_ISSNs.tsv
