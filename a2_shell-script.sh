@@ -22,7 +22,7 @@
 # Nachdem ich die Originaldatei in meinem git-Repositorium abgespeichert habe,
 # schaue ich sie in der Bash mithilfe des folgenden Befehls an: 
 
-less 2020-05-23-Article_list_dirty.tsv
+#   less 2020-05-23-Article_list_dirty.tsv
 
 # Dabei stelle ich fest, dass die Spalten 5 (ISSN) und 12 (Date) die für mich
 # relevanten sind. Diese filtere ich heraus und lege die Ergebnisse in 
@@ -33,17 +33,15 @@ cat 2020-05-23-Article_list_dirty.tsv | cut -f 5,12 > twocolumns.tsv
 # Der Befehl "cat" liest dabei die Ursprungsdatei aus, "cut" schneidet die Spalten  
 # aus und ">" speichert die gefilterten Daten in der neuen Datei "twocolumns.tsv" ab.
 # Durch das Pipe-Zeichen werden die Befehle miteinander verbunden und nacheinander 
-# ausgeführt.
+# ausgeführt. Die neue Datei schaue ich mir wieder im Pager an:
 
-# Die neue Datei schaue ich mir wieder im Pager an:
-
-less twocolumns.tsv
+   # less twocolumns.tsv
 
 # Dabei stelle ich fest, dass es eine Anzahl von Fehlern in der Auflistung gibt: 
-#   1. in einigen Zeilen steht das Wort "ISSN" vor der ISSN-Nummer
-#   2. einige Zeilen enthalten in der ersten Spalte das Wort "eng" und in der  
+# 1. in einigen Zeilen steht das Wort "ISSN" vor der ISSN-Nummer
+# 2. einige Zeilen enthalten in der ersten Spalte das Wort "eng" und in der  
 #      zweiten Spalte Zahlen die eindeutig keine ISSN-Nummer darstellen.
-#   3. größere Lücken bzw. Leerzeilen zwischen den relevanten Zeilen
+# 3. größere Lücken bzw. Leerzeilen zwischen den relevanten Zeilen
 
 # (Fehler Nr.2 deutet darauf hin, dass etwas in den Spalten in der Ursprungsdatei
 # verrutscht ist. Dies müsste eigentlich zunächst bereinigt werden, da sonst wichtige 
@@ -55,9 +53,9 @@ less twocolumns.tsv
 # nach dem Muster "sed s/wort/andereswort/g".
 #  "s" bestimmt das Wort, das ich bereinigen will,
 #  "g" ("global") ersetzt dies durch den Wert, der davor steht. 
-# Das Ergebnis speichere ich in eine neue Datei.
+# Das Ergebnis speichere ich in eine neue Datei:
 
-sed s/ISSN:/ /g;s/Issn:/ /g;s/issn:/ /g twocolumns.tsv > cleanfile_step1.tsv
+  # qsed s/ISSN:/ /g;s/Issn:/ /g;s/issn:/ /g twocolumns.tsv > cleanfile_step1.tsv
 
 # Dieser Befehl funktioniert nicht. Die Datei wird zwar angelegt, ist aber leer.
 # Der Grund ist, dass ohne einfache Anführungszeichen das zweite und dritte "s"
