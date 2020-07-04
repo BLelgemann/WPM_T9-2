@@ -25,69 +25,71 @@
 #   less 2020-05-23-Article_list_dirty.tsv
 
 # Dabei stelle ich fest, dass die Spalten 5 (ISSN) und 12 (Date) die für mich
-# relevanten sind. Diese filtere ich heraus und lege die Ergebnisse in 
-# einer neuen Datei ab:
+# relevanten sind. 
 
-cat 2020-05-23-Article_list_dirty.tsv | cut -f 5,12 > twocolumns.tsv
+# Außerdem stelle ich fest, dass die Informationen in ein paar Zeilen 
+# um 2 Spalten verrutscht sind. Dies muss ich zunächst korrigieren,
+# damit ich beim Ausschneiden der Spalten keine relevanten Informationen
+# verliere. Die Korrektur nehme ich mit dem befehl "sed" vor,
+# mit dem ich die Datei direkt bearbeiten kann: 
 
-# Der Befehl "cat" liest dabei die Ursprungsdatei aus, "cut" schneidet die Spalten  
-# aus und ">" speichert die gefilterten Daten in der neuen Datei "twocolumns.tsv" ab.
-# Durch das Pipe-Zeichen werden die Befehle miteinander verbunden und nacheinander 
-# ausgeführt. Die neue Datei schaue ich mir wieder im Pager an:
+cat 2020-05-23-Article_list_dirty.tsv | sed 's/IMPORTANT!\{0,1\}\t\t//' > cleanstep1.tsv
 
-   # less twocolumns.tsv
 
-# Dabei stelle ich fest, dass es eine Anzahl von Fehlern in der Auflistung gibt: 
-# 1. in einigen Zeilen steht das Wort "ISSN" vor der ISSN-Nummer
-# 2. einige Zeilen enthalten in der ersten Spalte das Wort "eng" und in der  
-#      zweiten Spalte Zahlen die eindeutig keine ISSN-Nummer darstellen.
-# 3. größere Lücken bzw. Leerzeilen zwischen den relevanten Zeilen
+# "s" bestimmt, was ausgetauscht werden soll: 
+# Das Wort "IMPORTANT" oder "IMPORTANT!", das in der Zeile steht, 
+# wird durch "nichts" - also "//" - ersetzt. "{0,1}" bestimmt, 
+# dass das Ausrufezeichen entweder vorhanden sein kann oder nicht.
+# Da die Spalten in der tsv-Datei durch Tab-Zeichen - also "\t" - erstellt 
+# werden, können diese Zeichen ebenfalls durch "nichts" ersetzt werden.
 
-# (Fehler Nr.2 deutet darauf hin, dass etwas in den Spalten in der Ursprungsdatei
-# verrutscht ist. Dies müsste eigentlich zunächst bereinigt werden, da sonst wichtige 
-# Daten verloren gehen, wenn man diese Zeilen einfach bereinigt. Dies kann an
-# dieser Stelle aber nicht geleistet werden.)
+# Die Ausgabe schaue ich mir im Pager an:
+   # less clean_step1.tsv
 
-# Zunächst möchte ich die Spalte ISSN von überflüssigen Wörtern bereinigen. 
-# Ich nutze den befehl "sed", um die Datei direkt bearbeiten zu können, 
-# nach dem Muster "sed s/wort/andereswort/g".
-#  "s" bestimmt das Wort, das ich bereinigen will,
-#  "g" ("global") ersetzt dies durch den Wert, der davor steht. 
-# Das Ergebnis speichere ich in eine neue Datei:
+# Dabei stelle ich fest, dass es Zeilen gibt, in denen am Anfang 
+# das Zeichen "#" oder "MAYBE" steht, die aber ansonsten leer sind.
+# Mit dem Befehl "grep -v" entferne ich jeweils diese Zeilen und 
+# speichere die gefilterten Daten in der neuen Datei "clean_step2.tsv" ab:
 
-  # qsed s/ISSN:/ /g;s/Issn:/ /g;s/issn:/ /g twocolumns.tsv > cleanfile_step1.tsv
+cat cleanstep1.tsv | grep -v '^#' | grep -v '^MAYBE' > cleanstep2.tsv
 
-# Dieser Befehl funktioniert nicht. Die Datei wird zwar angelegt, ist aber leer.
-# Der Grund ist, dass ohne einfache Anführungszeichen das zweite und dritte "s"
-# und die danach genannten Worte als Verzeichnisse erkannt werden.
+# "grep" greift die gewünschten Zeilen heraus und "-v" negiert diese,
+# so dass die Daten ohne diese Zeilen neu abgespeichert werden.
+# Das ^-Zeichen gibt an, dass diese Zeichen am Anfang der Zeile stehen.
+# Durch das Pipe-Zeichen werden die Befehle miteinander verbunden 
+# und nacheinander ausgeführt. 
 
-sed 's/ISSN:/ /g;s/Issn:/ /g;s/issn:/ /g' twocolumns.tsv > cleanfile_step1.tsv
+# Die neue Datei schaue ich mir wieder im Pager an:
+   # less clean_step2.tsv
 
-# Nun wurden die Worte entfernt und das Ergebnis in "cleanfile_step1" abgespeichert.
-# Allerdings sind die Zeilen nicht ganz sauber, weil sie durch die Leerzeichen
-# eingerückt sind.
-# Deshalb werden die Leerstellen am Anfang der Zeile mit 's/^[ \t]*//' entfernt.
+# Anschließend sollen die für mich relevanten Spalten herausgefiltert und 
+# die Ergebnisse wieder in einer neuen Datei abgelegt werden. 
 
-sed 's/^[ \t]*//' cleanfile_step1.tsv > cleanfile_step2.tsv
+cat cleanstep2.tsv | cut -f 5,12 > cleanstep3.tsv
 
-# Nun geht es darum, die Zeilen zu entfernen, die nicht die richtigen Daten enthalten 
-# (siehe Fehler Nr. 2). Hierfür benutze ich den Befehl "grep", der die Zeilen aufruft,
-# und die Option -v, die die Ausgabe von grep negiert. 
-# Das Ergebnis speichere ich in einer weiteren Zwischendatei.
+# Die neue Datei schaue ich mir wieder im Pager an:
+   # less clean_step3.tsv
 
-cat cleanfile_step2.tsv | grep eng -v > cleanfile_step3.tsv
+# Dabei stelle ich fest, dass in einigen Zeilen das Wort "ISSN" 
+# vor der ISSN-Nummer steht, in unterschiedlicher Schreibweise. 
+# Dies bereinige ich wieder mit dem Befehl "sed":
 
-# Zum Schluss müssen noch die übrig gebliebenen Leerzeilen entfernt werden.
-# Hierfür sortiere ich die Datei mit "sort" und lösche dann doppelte
-# Zeilen mit "uniq". (Die Datei muss vor der Verwendung von uniq sortiert 
-# werden, weil uniq nur aufeinander folgende doppelte Zeilen entdeckt.)
-# Zudem werden mit der Option -n die Zeien nach ihrem numerischen Wert
-# sortiert und mit der Option -u  nur Zeilen ausgegeben, die nicht
-# mehrfach vorkommen.
+cat cleanstep3.tsv | sed 's/issn:*//i' | sed 's/^[ \t]*//' > cleanstep4.tsv
 
-sort -n cleanfile_step3.tsv | uniq -u > cleanfile_step4.tsv
+# das *-Zeichen gibt an, dass die Position überall in der Zeile sein kann.
+# "i" bestimmt, dass Groß- und Kleinschreibung nicht beachtet wird.
+# Mit dem Befehl "sed 's/^[ \t]*//'" werden im Anschluss die übrig 
+# gebliebenen Leerzeichen entfernt.
 
-# Ich überprüfe das Ergebnis mit "cat".
-# Zum Abschluss speichere ich die bereinigte Datei als Enddatei ab.
+# Die neue Datei schaue ich mir wieder im Pager an:
+   # less clean_step4.tsv
 
-cp cleanfile_step4.tsv 2020-05-23-Dates_and_ISSNs.tsv
+# Nun müssen noch die Zeilen sortiert ("sort") werden, damit die 
+# Leerzeilen verschwinden, und doppelte Zeilen entfernt werden ("uniq"):
+
+cat cleanstep4.tsv | sort | uniq > cleanstep5.tsv
+
+# Zum Schluss werden die Spaltennamen entfernt und die 
+# Datei in ihrer Enddatei gespeichert:
+
+cat cleanstep5.tsv | grep -v '^Date' > 2020-05-23-Dates_and_ISSNs.tsv
