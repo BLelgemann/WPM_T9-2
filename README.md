@@ -20,16 +20,7 @@ Die Datei ist hier abgelegt: https://github.com/BLelgemann/WPM_T9-2/blob/master/
 
 ### Aufgabe Shell-Script:
 
-Das Skript ist folgendermaßen aufgebaut:
-
-cat 2020-05-23-Article_list_dirty.tsv | 
-sed 's/IMPORTANT!\{0,1\}\t\t//' | 
-grep -v '^#' | grep -v '^MAYBE' | 
-cut -f 5,12 | 
-sed 's/issn:*//i' |
-sed 's/^[ \t]*//' | 
-grep -v '^Date' > 2020-05-23-Dates_and_ISSNs.tsv
-
 Die Erstellung des Skripts mit den einzelnen Zwischenschritten wird in folgender Datei beschrieben:
 https://github.com/BLelgemann/WPM_T9-2/blob/master/a2_shell-script.sh
-Diese Datei kann zudem als Skript ausgeführt werden.
+
+Die Datei kann zudem als Skript ausgeführt werden.
