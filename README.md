@@ -21,7 +21,7 @@ Die Datei ist hier abgelegt: https://github.com/BLelgemann/WPM_T9-2/blob/master/
 ### Aufgabe Shell-Script:
 
 Für diese Aufgabe wurde die Datei „2020-05-23-Article_list_dirty.tsv“ bereinigt und eine neue Datei 
-„2020-05-23-Dates_and_ISSNs.tsv“ erzeugt, die nur die Spalten der ISSNs und Veröffentlichungsjahren enthält.
+„2020-05-23-Dates_and_ISSNs.tsv“ erzeugt, die nur die Spalten der ISSN und Veröffentlichungsjahre enthält.
 
 Die Erstellung des Shell-Skripts mit den einzelnen Zwischenschritten wird in folgender Datei beschrieben:
 https://github.com/BLelgemann/WPM_T9-2/blob/master/a2_shell-script.sh
